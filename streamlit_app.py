@@ -192,24 +192,24 @@ with st.form("search"):
     )
 
 if "items" not in st.session_state:
-    st.session_state["items"]
+    st.session_state["items"] = []
 
 if search and query.strip():
     try:
         with st.spinner("កំពុងស្វែងរក..."):
-            st.session_state.items = search_items(query.strip())
+            st.session_state["items"] = search_items(query.strip())
             st.session_state.pop("selected", None)
     except Exception as e:
         st.error(str(e))
 
-elif home or (not st.session_state.items and TOKEN):
+elif home or (not st.session_state["items"] and TOKEN):
     try:
         with st.spinner("កំពុងទាញយកបញ្ជីរឿង..."):
-            st.session_state.items = home_items()
+            st.session_state["items"] = home_items()
     except Exception as e:
         st.error(str(e))
 
-series = cards(st.session_state.items)
+series = cards(st.session_state["items"])
 
 if series:
     st.subheader(f"រឿងដែលរកឃើញ ({len(series)})")
