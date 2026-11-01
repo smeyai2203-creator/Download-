@@ -192,7 +192,7 @@ with st.form("search"):
     )
 
 if "items" not in st.session_state:
-    st.session_state.items = []
+    st.session_state["items"]
 
 if search and query.strip():
     try:
