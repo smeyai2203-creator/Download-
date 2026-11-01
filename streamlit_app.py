@@ -58,7 +58,7 @@ def xiaoying_get(endpoint, params=None, timeout=45):
         )
 
     # The API signing guide requires the exact request path, including trailing slash.
-    path = f"{API_PREFIX}/{endpoint.strip('/')}/"
+    path = f"{API_PREFIX}/{endpoint.strip('/')}"
     signed = dict(params or {})
     signed.update({
         "app_id": APP_ID,
