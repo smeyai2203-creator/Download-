@@ -1,7 +1,9 @@
 import os
 import time
-import re
-from urllib.parse import quote
+import hmac
+import hashlib
+import secrets
+from urllib.parse import urlparse
 
 import requests
 import streamlit as st
@@ -9,154 +11,119 @@ import streamlit as st
 st.set_page_config(
     page_title="Hongguo Drama Downloader",
     page_icon="🍎",
-    layout="wide"
+    layout="wide",
 )
 
-BASE = "https://api.apify.com/v2"
+# XiaoYingAPI — all credentials stay on the Streamlit server.
+API_BASE = "https://www.xiaoyingapi.com"
+API_PREFIX = "/api/dramas/hongguo"
 
-ACTORS = {
-    "search": "spider_studio~hongguo-search",
-    "detail": "spider_studio~hongguo-series-detail",
-    "feed": "spider_studio~hongguo-recommend-feed",
-    "download": "spider_studio~hongguo-video-download-kvs",
-}
+def get_secret(*names):
+    for name in names:
+        try:
+            value = st.secrets.get(name, "")
+        except Exception:
+            value = ""
+        if value:
+            return str(value).strip()
+        value = os.getenv(name, "")
+        if value:
+            return str(value).strip()
+    return ""
 
-def get_token():
-    try:
-        return st.secrets.get("APIFY_TOKEN", os.getenv("APIFY_TOKEN", ""))
-    except Exception:
-        return os.getenv("APIFY_TOKEN", "")
+APP_ID = get_secret("XIAOYING_APPID", "APPID")
+APP_SECRET = get_secret("XIAOYING_APPSECRET", "APPSECRET")
 
-TOKEN = get_token()
-
-def api(path, payload=None, timeout=90):
-    if not TOKEN:
-        raise RuntimeError("សូមកំណត់ APIFY_TOKEN ក្នុង Streamlit Secrets")
-
-    r = requests.request(
-        "POST" if payload is not None else "GET",
-        BASE + path,
-        headers={"Authorization": f"Bearer {TOKEN}"},
-        json=payload,
-        timeout=timeout
+def build_signature(params, method, path):
+    # XiaoYingAPI HMAC-SHA256 signature format from its Setup Wizard.
+    pairs = sorted(
+        (key, str(value))
+        for key, value in params.items()
+        if key != "sign" and value not in (None, "")
     )
+    query_string = "&".join(f"{key}={value}" for key, value in pairs)
+    raw = method.upper() + "\n" + path + "\n" + query_string
+    return hmac.new(
+        APP_SECRET.encode("utf-8"),
+        raw.encode("utf-8"),
+        hashlib.sha256,
+    ).hexdigest()
 
-    if not r.ok:
-        body = r.text[:500]
-        if r.status_code == 403 and ("Monthly usage hard limit exceeded" in body or "platform-feature-disabled" in body):
-            raise RuntimeError(
-                "Apify បានដល់កម្រិតប្រើប្រាស់ប្រចាំខែ (Monthly usage hard limit)។ "
-                "កូដ និង Streamlit ដំណើរការធម្មតា ប៉ុន្តែសេវា API បដិសេធសំណើ។ "
-                "ត្រូវបន្ថែម Quota ឬភ្ជាប់ Provider/API ផ្សេងដែលមានសិទ្ធិប្រើប្រាស់។"
-            )
-        raise RuntimeError(f"Apify {r.status_code}: {body}")
-
-    return r.json()
-
-def run_actor(actor, data):
-    return api(
-        f"/acts/{actor}/run-sync-get-dataset-items?timeout=300",
-        data,
-        timeout=320
-    )
-
-def pick(obj, *keys):
-    for key in keys:
-        value = obj.get(key) if isinstance(obj, dict) else None
-        if value not in (None, ""):
-            return value
-
-def image_url(value):
-    if isinstance(value, str) and value.startswith("http"):
-        return value.replace("http://", "https://")
-    if isinstance(value, list):
-        return image_url(value[0]) if value else None
-    if isinstance(value, dict):
-        return image_url(
-            value.get("url_list")
-            or value.get("url")
-            or value.get("uri")
+def xiaoying_get(endpoint, params=None, timeout=45):
+    if not APP_ID or not APP_SECRET:
+        raise RuntimeError(
+            "មិនទាន់រកឃើញ XiaoYingAPI credentials ទេ។ "
+            "សូមដាក់ XIAOYING_APPID និង XIAOYING_APPSECRET ក្នុង "
+            "Streamlit → Manage app → Settings → Secrets។"
         )
 
-def find_cover(obj):
-    if not isinstance(obj, dict):
-        return None
+    # The API signing guide requires the exact request path, including trailing slash.
+    path = f"{API_PREFIX}/{endpoint.strip('/')}/"
+    signed = dict(params or {})
+    signed.update({
+        "app_id": APP_ID,
+        "timestamp": str(int(time.time())),
+        "nonce": secrets.token_hex(8),
+    })
+    signed["sign"] = build_signature(signed, "GET", path)
 
-    for key, value in obj.items():
-        if re.search(r"cover|thumb|poster|image|img", key, re.I):
-            result = image_url(value)
-            if result:
-                return result
+    try:
+        response = requests.get(
+            API_BASE + path,
+            params=signed,
+            timeout=timeout,
+            headers={"Accept": "application/json", "User-Agent": "HongguoDramaDownloader/1.0"},
+        )
+    except requests.RequestException as exc:
+        raise RuntimeError(f"មិនអាចភ្ជាប់ XiaoYingAPI បាន៖ {exc}") from exc
 
-    for value in obj.values():
-        if isinstance(value, dict):
-            result = find_cover(value)
-            if result:
-                return result
+    if not response.ok:
+        raise RuntimeError(f"XiaoYingAPI HTTP {response.status_code}: {response.text[:400]}")
 
-    return None
+    try:
+        result = response.json()
+    except ValueError as exc:
+        raise RuntimeError("XiaoYingAPI មិនបានត្រឡប់ JSON ត្រឹមត្រូវទេ។") from exc
 
-def normalize(item):
-    data = item.get("data") or item
-    video = (data.get("video_data") or [data])[0]
+    if not isinstance(result, dict):
+        raise RuntimeError("ទម្រង់ចម្លើយពី XiaoYingAPI មិនត្រឹមត្រូវទេ។")
 
+    if result.get("code") != 10000:
+        message = result.get("msg") or "Unknown API error"
+        raise RuntimeError(f"XiaoYingAPI ({result.get('code')}): {message}")
+
+    return result.get("data") or {}
+
+def extract_results(data):
+    rows = data.get("results", [])
+    return rows if isinstance(rows, list) else []
+
+@st.cache_data(ttl=300, show_spinner=False)
+def get_rankings():
+    return extract_results(xiaoying_get("rank", {"type": "hot-drama", "page": 1}))
+
+@st.cache_data(ttl=300, show_spinner=False)
+def search_dramas(keyword):
+    return extract_results(xiaoying_get("search", {"keyword": keyword, "page": 1}))
+
+@st.cache_data(ttl=600, show_spinner=False)
+def get_details(series_id):
+    return xiaoying_get("detail", {"series_id": str(series_id)})
+
+def normalize_drama(row):
     return {
-        "id": str(
-            pick(video, "series_id", "seriesId", "book_id", "id")
-            or pick(data, "series_id", "seriesId")
-            or ""
-        ),
-        "title": pick(
-            video, "series_name", "title", "name", "book_name"
-        ) or "Untitled",
-        "cover": find_cover(video) or find_cover(data),
-        "episodes": pick(
-            video, "episode_cnt", "episodeCount", "series_count"
-        ),
-        "desc": pick(
-            video, "series_intro", "intro", "synopsis", "desc"
-        ) or ""
+        "id": str(row.get("series_id") or ""),
+        "title": row.get("name") or "Untitled",
+        "cover": row.get("cover") or "",
+        "episodes": row.get("episode_cnt") or row.get("listed_cnt") or "",
+        "desc": row.get("intro") or "",
+        "tags": row.get("tags") or [],
     }
 
-def cards(items):
-    result = []
-    seen = set()
-
-    for item in items or []:
-        if not isinstance(item, dict):
-            continue
-
-        if item.get("success") is False:
-            continue
-
-        card = normalize(item)
-
-        if card["id"] and card["id"] not in seen:
-            result.append(card)
-            seen.add(card["id"])
-
-    return result
-
-@st.cache_data(ttl=86400)
-def home_items():
-    return run_actor(
-        ACTORS["feed"],
-        {"maxResults": 100, "includeRaw": True}
-    )
-
-@st.cache_data(ttl=3600)
-def search_items(query):
-    return run_actor(
-        ACTORS["search"],
-        {"queries": [query], "maxPages": 1}
-    )
-
-@st.cache_data(ttl=86400)
-def detail_items(series_id):
-    return run_actor(
-        ACTORS["detail"],
-        {"seriesIds": [str(series_id)]}
-    )
+def clear_cached_lists():
+    get_rankings.clear()
+    search_dramas.clear()
+    get_details.clear()
 
 st.markdown("""
 <style>
@@ -170,12 +137,8 @@ st.markdown("""
     }
     .hero h1 { color: white; margin: 0 0 .35rem 0; font-size: 2rem; }
     .hero p { color: #eee9ff; margin: 0; font-size: 1rem; }
-    div[data-testid="stForm"], div[data-testid="stVerticalBlockBorderWrapper"] {
-        border-radius: 16px;
-    }
     [data-testid="stImage"] img { border-radius: 13px; object-fit: cover; }
-    .section-label { font-size: 1.15rem; font-weight: 700; margin: .8rem 0; }
-    div.stButton > button, div.stFormSubmitButton > button {
+    div.stButton > button, div.stFormSubmitButton > button, .stLinkButton a {
         border-radius: 11px; min-height: 2.7rem; font-weight: 600;
     }
     div[data-testid="stAlert"] { border-radius: 13px; }
@@ -183,232 +146,126 @@ st.markdown("""
 </style>
 <div class="hero">
   <h1>🍎 Hongguo Drama</h1>
-  <p>ស្វែងរករឿង • មើលព័ត៌មានភាគ • ទាញយកវីដេអូ</p>
+  <p>ស្វែងរករឿង • មើលព័ត៌មានភាគ • ចាក់វីដេអូ និងបើកតំណទាញយក</p>
 </div>
 """, unsafe_allow_html=True)
 
-if not TOKEN:
-    st.warning(
-        'មិនទាន់ភ្ជាប់ API Token ទេ។ សូមបន្ថែម APIFY_TOKEN ក្នុង '
-        'Streamlit → Manage app → Settings → Secrets។'
+if not APP_ID or not APP_SECRET:
+    st.error(
+        "មិនទាន់រកឃើញ API credentials។ សូមពិនិត្យ Streamlit Secrets "
+        "ថាមាន XIAOYING_APPID និង XIAOYING_APPSECRET ត្រឹមត្រូវ។"
     )
+    st.info("កុំដាក់ APPSECRET ក្នុងកូដ ឬ GitHub។ ដាក់តែក្នុង Streamlit Secrets ប៉ុណ្ណោះ។")
 
-with st.form("search"):
-    query = st.text_input(
-        "ស្វែងរករឿង",
-        placeholder="បញ្ចូលឈ្មោះរឿង..."
-    )
-
+with st.form("search_form"):
+    query = st.text_input("ស្វែងរករឿង", placeholder="បញ្ចូលឈ្មោះរឿង...")
     c1, c2 = st.columns(2)
+    do_search = c1.form_submit_button("🔎 ស្វែងរក", use_container_width=True)
+    do_home = c2.form_submit_button("🏠 រឿងកំពុងពេញនិយម", use_container_width=True)
 
-    search = c1.form_submit_button(
-        "🔎 ស្វែងរក",
-        use_container_width=True
-    )
+if "drama_items" not in st.session_state:
+    st.session_state["drama_items"] = []
+if "selected_drama" not in st.session_state:
+    st.session_state["selected_drama"] = None
 
-    home = c2.form_submit_button(
-        "🏠 រឿងថ្មី",
-        use_container_width=True
-    )
-
-if "items" not in st.session_state:
-    st.session_state["items"] = []
-
-if search and query.strip():
+if do_search and query.strip():
     try:
-        with st.spinner("កំពុងស្វែងរក..."):
-            st.session_state["items"] = search_items(query.strip())
-            st.session_state.pop("selected", None)
-    except Exception as e:
-        st.error(str(e))
-
-elif home or (not st.session_state["items"] and TOKEN):
+        with st.spinner("កំពុងស្វែងរករឿង..."):
+            st.session_state["drama_items"] = search_dramas(query.strip())
+            st.session_state["selected_drama"] = None
+    except Exception as exc:
+        st.error(str(exc))
+elif do_home or (not st.session_state["drama_items"] and APP_ID and APP_SECRET):
     try:
-        with st.spinner("កំពុងទាញយកបញ្ជីរឿង..."):
-            st.session_state["items"] = home_items()
-    except Exception as e:
-        st.error(str(e))
+        with st.spinner("កំពុងទាញយករឿងកំពុងពេញនិយម..."):
+            st.session_state["drama_items"] = get_rankings()
+    except Exception as exc:
+        st.error(str(exc))
 
-series = cards(st.session_state["items"])
+items = [
+    normalize_drama(row)
+    for row in st.session_state["drama_items"]
+    if isinstance(row, dict) and row.get("series_id")
+]
 
-if series:
-    st.subheader(f"រឿងដែលរកឃើញ ({len(series)})")
-
+if items:
+    st.subheader(f"រឿងដែលរកឃើញ ({len(items)})")
     columns = st.columns(4)
-
-    for i, item in enumerate(series):
-        with columns[i % 4]:
-
+    for index, item in enumerate(items):
+        with columns[index % 4]:
             if item["cover"]:
-                st.image(
-                    item["cover"],
-                    use_container_width=True
-                )
-
+                st.image(item["cover"], use_container_width=True)
             st.markdown("**" + item["title"] + "**")
-
-            st.caption(
-                "ភាគ៖ " + str(item["episodes"] or "—")
-            )
-
-            if st.button(
-                "មើលភាគ",
-                key="series_" + item["id"],
-                use_container_width=True
-            ):
-                st.session_state["selected"] = item
+            if item["tags"]:
+                st.caption(" • ".join(str(tag) for tag in item["tags"][:3]))
+            if st.button("មើលភាគ", key=f"drama_{item['id']}", use_container_width=True):
+                st.session_state["selected_drama"] = item
                 st.rerun()
+elif APP_ID and APP_SECRET and (do_search or do_home):
+    st.info("រកមិនឃើញរឿងទេ។ សូមសាកល្បងឈ្មោះរឿងផ្សេង។")
 
-if st.session_state.get("selected"):
-
-    selected = st.session_state["selected"]
-
+selected = st.session_state.get("selected_drama")
+if selected:
     st.divider()
     st.subheader("📺 " + selected["title"])
-
-    if st.button("← ត្រឡប់"):
-        st.session_state.pop("selected", None)
+    if st.button("← ត្រឡប់ទៅបញ្ជីរឿង"):
+        st.session_state["selected_drama"] = None
         st.rerun()
 
     try:
         with st.spinner("កំពុងទាញយកព័ត៌មានភាគ..."):
+            detail = get_details(selected["id"])
 
-            details = detail_items(selected["id"])
+        st.write(detail.get("intro") or selected.get("desc") or "")
+        episode_rows = detail.get("episodes") or []
+        playable_rows = [
+            ep for ep in episode_rows
+            if isinstance(ep, dict) and ep.get("playable") is True
+        ]
 
-        row = next(
-            (x for x in details if x.get("success") is not False),
-            {}
-        )
-
-        if row.get("success") is False:
-            st.error(row.get("error", "មិនអាចទាញយកព័ត៌មានបាន"))
+        if not playable_rows:
+            st.warning("រឿងនេះមិនទាន់មានភាគដែលអាចចាក់បានទេ។")
         else:
-            series_data = row.get("series") or {}
-            episodes = row.get("episodes") or []
-
-            st.write(
-                series_data.get("synopsis")
-                or selected["desc"]
-            )
-
-            if not episodes and series_data.get("firstVideoId"):
-                episodes = [{
-                    "videoId": series_data["firstVideoId"],
-                    "episodeIndex": 1
-                }]
-
-            choices = {
-                f"ភាគ {ep.get('episodeIndex', i+1)}":
-                str(ep.get("videoId"))
-                for i, ep in enumerate(episodes)
-                if ep.get("videoId")
+            labels = {
+                f"ភាគ {int(ep.get('ep', i + 1))}": int(ep.get("ep", i + 1))
+                for i, ep in enumerate(playable_rows)
             }
-
-            if choices:
-
-                selected_eps = st.multiselect(
-                    "ជ្រើសរើសភាគ",
-                    list(choices.keys())
-                )
-
-                if st.button(
-                    "⬇ រៀបចំទាញយក",
-                    disabled=not selected_eps
-                ):
-
-                    if len(selected_eps) > 5:
-                        st.warning("សូមជ្រើសរើសមិនលើស 5 ភាគ")
-                    else:
-                        ids = [
-                            choices[x] for x in selected_eps
-                        ]
-
-                        with st.spinner("កំពុងដំណើរការ..."):
-
-                            result = api(
-                                f"/acts/{ACTORS['download']}/runs",
-                                {"videoIds": ids}
+            selected_labels = st.multiselect(
+                "ជ្រើសរើសភាគ (អតិបរមា 5 ភាគ)",
+                list(labels.keys()),
+                default=[list(labels.keys())[0]],
+            )
+            quality = st.selectbox("គុណភាពវីដេអូ", [360, 480, 540, 720, 1080], index=4)
+            codec = st.selectbox("ទម្រង់វីដេអូ", ["h264", "hevc"], index=0)
+            if st.button("▶ ចាក់វីដេអូ / បង្ហាញតំណ", disabled=not selected_labels):
+                if len(selected_labels) > 5:
+                    st.warning("សូមជ្រើសរើសមិនលើស 5 ភាគក្នុងមួយលើក។")
+                else:
+                    for label in selected_labels:
+                        ep_num = labels[label]
+                        with st.spinner(f"កំពុងរៀបចំភាគ {ep_num}..."):
+                            playback = xiaoying_get(
+                                "play",
+                                {
+                                    "series_id": selected["id"],
+                                    "ep": ep_num,
+                                    "q": quality,
+                                    "codec": codec,
+                                },
                             )
-
-                        run_id = result["data"]["id"]
-
-                        status_box = st.empty()
-                        progress = st.progress(0)
-
-                        final = None
-
-                        for tick in range(100):
-
-                            time.sleep(3)
-
-                            state = api(
-                                f"/actor-runs/{quote(run_id)}"
-                            )
-
-                            data = state.get("data", {})
-                            status = data.get("status", "RUNNING")
-
-                            status_box.write(
-                                "ស្ថានភាព៖ " + status
-                            )
-
-                            progress.progress(
-                                min((tick + 1) / 100, 0.99)
-                            )
-
-                            if status in [
-                                "SUCCEEDED",
-                                "FAILED",
-                                "ABORTED",
-                                "TIMED-OUT"
-                            ]:
-
-                                dataset = data.get(
-                                    "defaultDatasetId"
-                                )
-
-                                final = (
-                                    api(
-                                        f"/datasets/{dataset}/items?clean=true"
-                                    )
-                                    if dataset else []
-                                )
-
-                                break
-
-                        if final is None:
-                            st.warning(
-                                "ការងារនៅដំណើរការ សូមពិនិត្យម្ដងទៀត"
-                            )
-
-                        else:
-                            progress.progress(1)
-
-                            for item in final:
-
-                                video = (
-                                    item.get("videoUrl")
-                                    or item.get("video_url")
-                                )
-
-                                if video:
-                                    st.video(video)
-
-                                    st.link_button(
-                                        "⬇ ទាញយកវីដេអូ",
-                                        video
-                                    )
-                                else:
-                                    st.warning(
-                                        item.get("error")
-                                        or "មិនមានវីដេអូ"
-                                    )
-
-    except Exception as e:
-        st.error(str(e))
+                        video_url = playback.get("url")
+                        if not video_url:
+                            st.warning(f"ភាគ {ep_num}: API មិនបានផ្ដល់តំណវីដេអូទេ។")
+                            continue
+                        st.markdown(f"### ភាគ {ep_num}")
+                        st.video(video_url)
+                        st.link_button("⬇ បើក / ទាញយកវីដេអូ", video_url, use_container_width=True)
+                        if playback.get("source") == "stream" and playback.get("ready") is False:
+                            st.caption("វីដេអូកំពុងរៀបចំនៅម៉ាស៊ីនមេ។ សូមរង់ចាំ រួចចុចតំណម្ដងទៀត។")
+                        elif playback.get("source") == "origin":
+                            st.caption("តំណនេះជាតំណប្រភពដើម និងមានពេលផុតកំណត់។")
+    except Exception as exc:
+        st.error(str(exc))
 
 st.divider()
-
-st.caption(
-    "Hongguo Drama Downloader · Apify API"
-)
+st.caption("Hongguo Drama Downloader · Powered by XiaoYingAPI")
