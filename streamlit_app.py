@@ -42,7 +42,14 @@ def api(path, payload=None, timeout=90):
     )
 
     if not r.ok:
-        raise RuntimeError(f"Apify {r.status_code}: {r.text[:300]}")
+        body = r.text[:500]
+        if r.status_code == 403 and ("Monthly usage hard limit exceeded" in body or "platform-feature-disabled" in body):
+            raise RuntimeError(
+                "Apify បានដល់កម្រិតប្រើប្រាស់ប្រចាំខែ (Monthly usage hard limit)។ "
+                "កូដ និង Streamlit ដំណើរការធម្មតា ប៉ុន្តែសេវា API បដិសេធសំណើ។ "
+                "ត្រូវបន្ថែម Quota ឬភ្ជាប់ Provider/API ផ្សេងដែលមានសិទ្ធិប្រើប្រាស់។"
+            )
+        raise RuntimeError(f"Apify {r.status_code}: {body}")
 
     return r.json()
 
@@ -153,24 +160,37 @@ def detail_items(series_id):
 
 st.markdown("""
 <style>
-.block-container {
-    padding-top: 1.2rem;
-    max-width: 1200px;
-}
-[data-testid="stImage"] img {
-    border-radius: 12px;
-    object-fit: cover;
-}
+    .stApp { background: #f7f8fc; }
+    .block-container { max-width: 1180px; padding-top: 1.3rem; padding-bottom: 3rem; }
+    [data-testid="stHeader"] { background: transparent; }
+    .hero {
+        padding: 1.35rem 1.5rem; border-radius: 20px; margin-bottom: 1.2rem;
+        background: linear-gradient(120deg, #251b4b 0%, #5140a0 55%, #8065cf 100%);
+        color: white; box-shadow: 0 8px 24px rgba(47,35,94,.16);
+    }
+    .hero h1 { color: white; margin: 0 0 .35rem 0; font-size: 2rem; }
+    .hero p { color: #eee9ff; margin: 0; font-size: 1rem; }
+    div[data-testid="stForm"], div[data-testid="stVerticalBlockBorderWrapper"] {
+        border-radius: 16px;
+    }
+    [data-testid="stImage"] img { border-radius: 13px; object-fit: cover; }
+    .section-label { font-size: 1.15rem; font-weight: 700; margin: .8rem 0; }
+    div.stButton > button, div.stFormSubmitButton > button {
+        border-radius: 11px; min-height: 2.7rem; font-weight: 600;
+    }
+    div[data-testid="stAlert"] { border-radius: 13px; }
+    footer { visibility: hidden; }
 </style>
+<div class="hero">
+  <h1>🍎 Hongguo Drama</h1>
+  <p>ស្វែងរករឿង • មើលព័ត៌មានភាគ • ទាញយកវីដេអូ</p>
+</div>
 """, unsafe_allow_html=True)
-
-st.title("🍎 Hongguo Drama Downloader")
-st.caption("ស្វែងរករឿង · មើលភាគ · ទាញយកវីដេអូ")
 
 if not TOKEN:
     st.warning(
-        'សូមបន្ថែម APIFY_TOKEN ក្នុង Streamlit Secrets '
-        'ឧទាហរណ៍៖ APIFY_TOKEN = "YOUR_TOKEN"'
+        'មិនទាន់ភ្ជាប់ API Token ទេ។ សូមបន្ថែម APIFY_TOKEN ក្នុង '
+        'Streamlit → Manage app → Settings → Secrets។'
     )
 
 with st.form("search"):
@@ -236,12 +256,12 @@ if series:
                 key="series_" + item["id"],
                 use_container_width=True
             ):
-                st.session_state.selected = item
+                st.session_state["selected"] = item
                 st.rerun()
 
 if st.session_state.get("selected"):
 
-    selected = st.session_state.selected
+    selected = st.session_state["selected"]
 
     st.divider()
     st.subheader("📺 " + selected["title"])
