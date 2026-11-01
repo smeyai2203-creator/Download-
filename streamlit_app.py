@@ -129,42 +129,57 @@ st.markdown("""
 <style>
 .stApp { background:#101111; color:#f4f4f4; }
 [data-testid="stHeader"] { background:#101111; }
-.block-container { max-width:1500px; padding:.55rem .8rem 1.2rem; }
-.hero { padding:.65rem .85rem; border-radius:8px; margin-bottom:.55rem;
-        background:linear-gradient(110deg,#191919,#292929); border:1px solid #303030; }
-.hero h1 { color:#fff; margin:0 0 .12rem; font-size:1.45rem; }
-.hero p { color:#c9c9c9; margin:0; font-size:.82rem; }
+.block-container { max-width:1500px; padding:.45rem .8rem 1.1rem; }
+.hero { padding:.5rem .8rem; border-radius:5px; margin-bottom:.45rem;
+        background:#171818; border-bottom:1px solid #292929; }
+.hero h1 { color:#fff; margin:0 0 .08rem; font-size:1.25rem; }
+.hero p { color:#c9c9c9; margin:0; font-size:.78rem; }
 h1,h2,h3,p,label,[data-testid="stMarkdownContainer"] { color:#f0f0f0; }
-h2,h3 { margin:.55rem 0 .35rem !important; }
-[data-testid="stImage"] img { width:100%; height:205px; object-fit:cover; border-radius:7px; }
+h2,h3 { margin:.48rem 0 .28rem !important; }
+[data-testid="stImage"] { width:100%; }
+[data-testid="stImage"] img {
+ width:100% !important; height:auto !important; aspect-ratio:2/3;
+ object-fit:cover; border-radius:5px;
+}
 div[data-testid="stHorizontalBlock"] {
- display:flex !important; flex-wrap:nowrap !important; gap:.55rem !important;
- overflow-x:auto !important; padding:.15rem 0 .65rem; scrollbar-width:thin;
- scrollbar-color:#555 #181818;
+ display:flex !important; flex-wrap:nowrap !important;
+ gap:8px !important; align-items:flex-start;
 }
 div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
- flex:0 0 calc(16.666% - .5rem) !important;
- width:calc(16.666% - .5rem) !important; min-width:105px !important;
+ flex:1 1 0 !important; width:0 !important; min-width:0 !important;
 }
-div[data-testid="stTextInput"] input { background:#202222; color:#fff; border:1px solid #444; }
-div[data-testid="stButton"] > button, div[data-testid="stFormSubmitButton"] > button,
-.stLinkButton a { background:#292929; color:#fff; border:1px solid #555;
- border-radius:7px; min-height:2.1rem; padding:.25rem .45rem; font-size:.82rem; }
-div[data-testid="stButton"] > button:hover { border-color:#e5a12b; color:#ffd27a; }
-[data-testid="stAlert"] { border-radius:8px; }
+div[data-testid="stTextInput"] input {
+ background:#202222; color:#fff; border:1px solid #444;
+}
+div[data-testid="stButton"] > button,
+div[data-testid="stFormSubmitButton"] > button,
+.stLinkButton a {
+ background:#292929; color:#fff; border:1px solid #555;
+ border-radius:5px; min-height:1.8rem; padding:.18rem .3rem;
+ font-size:.75rem; white-space:normal;
+}
+div[data-testid="stButton"] > button:hover {
+ border-color:#e5a12b; color:#ffd27a;
+}
+[data-testid="stAlert"] { border-radius:7px; }
 footer { visibility:hidden; }
 @media(max-width:700px) {
- .block-container { padding:.35rem .45rem .9rem; }
- .hero { padding:.55rem .7rem; margin-bottom:.4rem; }
- .hero h1 { font-size:1.2rem; } .hero p { font-size:.72rem; }
- [data-testid="stImage"] img { height:145px; }
+ .block-container { padding:.25rem .35rem .8rem; }
+ .hero { padding:.4rem .55rem; margin-bottom:.35rem; }
+ .hero h1 { font-size:1rem; } .hero p { font-size:.68rem; }
+ div[data-testid="stHorizontalBlock"] { gap:5px !important; }
  div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
-  flex:0 0 105px !important; width:105px !important; min-width:105px !important;
+  flex:1 1 0 !important; width:0 !important; min-width:0 !important;
  }
- h2 { font-size:1.15rem !important; } h3 { font-size:1rem !important; }
- div[data-testid="stMarkdownContainer"] p { font-size:.78rem; line-height:1.3; }
- div[data-testid="stButton"] > button, div[data-testid="stFormSubmitButton"] > button {
-  font-size:.75rem; min-height:1.9rem;
+ [data-testid="stImage"] img { aspect-ratio:2/3; height:auto !important; }
+ h2 { font-size:1.02rem !important; }
+ h3 { font-size:.92rem !important; }
+ div[data-testid="stMarkdownContainer"] p {
+  font-size:.68rem; line-height:1.2; overflow-wrap:anywhere;
+ }
+ div[data-testid="stButton"] > button,
+ div[data-testid="stFormSubmitButton"] > button {
+  font-size:.65rem; min-height:1.65rem; padding:.12rem .18rem;
  }
 }
 </style>
@@ -214,17 +229,19 @@ items = [
 
 if items:
     st.subheader(f"🎬 រឿងកំពុងពេញនិយម / លទ្ធផលស្វែងរក ({len(items)})")
-    columns = st.columns(6)
-    for index, item in enumerate(items):
-        with columns[index % 6]:
-            if item["cover"]:
-                st.image(item["cover"], use_container_width=True)
-            st.markdown("**" + item["title"] + "**")
-            if item["tags"]:
-                st.caption(" • ".join(str(tag) for tag in item["tags"][:3]))
-            if st.button("មើលរឿង", key=f"drama_{item['id']}", use_container_width=True):
-                st.session_state["selected_drama"] = item
-                st.rerun()
+    for row_start in range(0, len(items), 6):
+        row_items = items[row_start:row_start + 6]
+        columns = st.columns(6, gap="small")
+        for col, item in zip(columns, row_items):
+            with col:
+                if item["cover"]:
+                    st.image(item["cover"], use_container_width=True)
+                st.markdown("**" + item["title"] + "**")
+                if item["tags"]:
+                    st.caption(" · ".join(str(tag) for tag in item["tags"][:2]))
+                if st.button("មើលរឿង", key=f"drama_{item['id']}", use_container_width=True):
+                    st.session_state["selected_drama"] = item
+                    st.rerun()
 elif APP_ID and APP_SECRET and (do_search or do_home):
     st.info("រកមិនឃើញរឿងទេ។ សូមសាកល្បងឈ្មោះរឿងផ្សេង។")
 
