@@ -127,83 +127,73 @@ def clear_cached_lists():
 
 st.markdown("""
 <style>
-.stApp {background:#070808;color:#f5f5f5;}
-[data-testid="stHeader"] {background:#070808;}
-.block-container {max-width:1600px;padding:.25rem .65rem 5.2rem;}
-.hero {min-height:205px;padding:1rem 1.1rem;margin:.2rem 0 .8rem;border-radius:14px;
- border:1px solid #422727;
- background:linear-gradient(90deg,rgba(0,0,0,.96),rgba(0,0,0,.72) 38%,rgba(0,0,0,.08)),
- linear-gradient(120deg,#361414,#a34a32 58%,#161616);
- display:flex;flex-direction:column;justify-content:center;}
-.hero h1 {color:#fff;font-size:1.8rem;font-weight:850;margin:0 0 .25rem;}
-.hero p {color:#f0dddd;font-size:.9rem;margin:0 0 .7rem;}
-.hero .hero-tag {display:inline-block;background:#e50914;color:white;padding:.2rem .55rem;
- border-radius:6px;font-weight:800;font-size:.78rem;width:max-content;}
-h1,h2,h3,p,label,[data-testid="stMarkdownContainer"],
-[data-testid="stCaptionContainer"], [data-testid="stMarkdownContainer"] *,
-.stText, .stCaption, small, span {
- color:#ffffff !important;
+@import url('https://fonts.googleapis.com/css2?family=Battambang:wght@400;500;600;700&display=swap');
+.stApp { background:#0b0b0b; color:#fff; }
+[data-testid="stHeader"] { background:#0b0b0b; }
+.block-container { max-width:1500px; padding:.45rem .65rem 2rem; }
+.hero {
+  padding:1rem; margin:.3rem 0 .8rem; border-radius:12px;
+  background:linear-gradient(100deg,#171717,#3a1717);
+  border:1px solid #563030;
 }
-body, button, input, textarea, select, [data-baseweb] {
- font-family:"Battambang","Noto Sans Khmer","Khmer OS Siemreap",sans-serif !important;
+.hero h1 { color:#fff; font-size:1.5rem; font-weight:700; margin:0 0 .3rem; }
+.hero p { color:#fff; font-size:1rem; line-height:1.6; margin:0; }
+.hero .hero-tag { display:inline-block; background:#d71920; color:#fff;
+  padding:.25rem .6rem; border-radius:6px; font-weight:700; margin-bottom:.35rem; }
+html, body, [class*="css"], button, input, textarea, select {
+  font-family:'Battambang',sans-serif !important;
 }
-[data-testid="stMarkdownContainer"] p,
-[data-testid="stMarkdownContainer"] li,
-[data-testid="stCaptionContainer"] {
- color:#f5f5f5 !important;
- font-size: .92rem;
- line-height:1.55;
+h1,h2,h3,p,label,
+[data-testid="stMarkdownContainer"],
+[data-testid="stCaptionContainer"] { color:#fff !important; }
+h2 { font-size:1.25rem !important; line-height:1.6 !important; }
+h3 { font-size:1.1rem !important; line-height:1.6 !important; }
+.poster-title {
+  color:#fff; font-size:1rem; font-weight:700;
+  line-height:1.6; min-height:3.2em; margin:.35rem 0;
+  overflow-wrap:anywhere;
 }
-h2,h3 {margin:.48rem 0 .35rem!important;}
-.poster-title {color:#fff;font-size:1rem;font-weight:800;line-height:1.45;
- min-height:2.8em;margin:.35rem 0 .2rem;text-shadow:0 1px 2px #000;}
-[data-testid="stImage"] img {width:100%!important;aspect-ratio:2/3;height:auto!important;
- object-fit:cover;border-radius:8px;border:1px solid #292929;}
-div[data-testid="stHorizontalBlock"] {gap:9px!important;align-items:flex-start;}
-div[data-testid="stTextInput"] input,
-div[data-testid="stMultiSelect"] input,
-div[data-testid="stSelectbox"] input,
-textarea {
- background:#202020 !important;color:#ffffff !important;
- border:1px solid #777 !important;font-size:1rem !important;
+[data-testid="stImage"] img {
+  width:100%; aspect-ratio:2/3; height:auto; object-fit:cover;
+  border-radius:8px; border:1px solid #444;
 }
-div[data-testid="stTextInput"] label,
-div[data-testid="stMultiSelect"] label,
-div[data-testid="stSelectbox"] label {
- color:#ffffff !important;font-size:1rem !important;font-weight:700 !important;
+[data-testid="stTextInput"] input,
+[data-testid="stMultiSelect"] input,
+[data-testid="stSelectbox"] input {
+  background:#202020 !important; color:#fff !important;
+  border:1px solid #777 !important; min-height:2.7rem;
 }
-::placeholder {color:#c8c8c8 !important;opacity:1 !important;}
-div[data-testid="stButton"]>button,div[data-testid="stFormSubmitButton"]>button,
+[data-testid="stTextInput"] label,
+[data-testid="stMultiSelect"] label,
+[data-testid="stSelectbox"] label {
+  color:#fff !important; font-size:1rem !important; font-weight:700 !important;
+}
+[data-testid="stButton"] > button,
+[data-testid="stFormSubmitButton"] > button,
 .stLinkButton a {
- background:#d91520 !important;color:#ffffff !important;border:1px solid #ff646b !important;
- border-radius:8px;min-height:2.35rem;padding:.35rem .45rem;
- font-size:.92rem;font-weight:800;white-space:normal;line-height:1.35;
+  background:#d71920 !important; color:#fff !important;
+  border:1px solid #ff7378 !important; border-radius:8px;
+  min-height:2.6rem; padding:.35rem .55rem;
+  font-size:.95rem !important; font-weight:700 !important;
+  line-height:1.5; white-space:normal;
 }
-div[data-testid="stButton"]>button:hover,.stLinkButton a:hover {background:#b80710;color:white;}
-[data-testid="stAlert"] {border-radius:8px;}
-[data-testid="stExpander"] {background:#171717;border:1px solid #333;}
-footer {visibility:hidden;}
-.bottom-nav {position:fixed;z-index:999;bottom:0;left:0;right:0;background:#080808;
- border-top:1px solid #333;display:flex;justify-content:space-around;align-items:center;
- padding:.5rem .2rem .7rem;color:#eee;font-size:.76rem;text-align:center;}
-.bottom-nav span {display:block;font-size:1.25rem;margin-bottom:.12rem;}
-.bottom-nav .download {background:#ed1014;border-radius:50%;padding:.55rem .8rem;
- transform:translateY(-12px);border:3px solid #333;font-weight:800;}
+[data-testid="stButton"] > button:hover,
+[data-testid="stFormSubmitButton"] > button:hover,
+.stLinkButton a:hover { background:#a90f16 !important; color:#fff !important; }
+[data-testid="stCaptionContainer"] { color:#e6e6e6 !important; font-size:.9rem !important; }
+[data-testid="stAlert"] { border-radius:8px; }
+footer { visibility:hidden; }
 @media(max-width:700px) {
- .block-container {padding:.2rem .3rem 5.4rem;}
- .hero {min-height:155px;padding:.7rem .75rem;margin-bottom:.5rem;border-radius:10px;}
- .hero h1 {font-size:1.22rem;} .hero p {font-size:.72rem;margin-bottom:.45rem;}
- .hero .hero-tag {font-size:.68rem;}
- div[data-testid="stHorizontalBlock"] {gap:6px!important;}
- [data-testid="stImage"] img {aspect-ratio:2/3;height:auto!important;}
- h2 {font-size:1.12rem!important;} h3 {font-size:1rem!important;}
- .poster-title {font-size:.9rem;min-height:2.7em;}
- div[data-testid="stMarkdownContainer"] p {font-size:.88rem;line-height:1.5;}
- [data-testid="stCaptionContainer"] {font-size:.82rem !important;}
- div[data-testid="stButton"]>button,div[data-testid="stFormSubmitButton"]>button,
- .stLinkButton a {font-size:.82rem;min-height:2.15rem;padding:.25rem .3rem;}
- .bottom-nav {font-size:.65rem;padding:.35rem .1rem .55rem;}
- .bottom-nav span {font-size:1.08rem;}
+  .block-container { padding:.3rem .4rem 1.5rem; }
+  .hero { padding:.75rem; }
+  .hero h1 { font-size:1.2rem; }
+  .hero p { font-size:.9rem; }
+  h2 { font-size:1.1rem !important; }
+  .poster-title { font-size:.88rem; line-height:1.55; min-height:3.1em; }
+  [data-testid="stCaptionContainer"] { font-size:.8rem !important; }
+  [data-testid="stButton"] > button,
+  [data-testid="stFormSubmitButton"] > button,
+  .stLinkButton a { font-size:.82rem !important; min-height:2.35rem; }
 }
 </style>
 <div class="hero">
@@ -264,7 +254,7 @@ if items:
                 st.markdown("<div class=\"poster-title\">" + item["title"] + "</div>", unsafe_allow_html=True)
                 if item["episodes"]:
                     st.caption(f"ចំនួន {item['episodes']} ភាគ")
-                if st.button("⬇ ទាញយក / មើលរឿង", key=f"drama_{item['id']}", use_container_width=True):
+                if st.button("មើលរឿង", key=f"drama_{item['id']}", use_container_width=True):
                     st.session_state["selected_drama"] = item
                     st.rerun()
 elif APP_ID and APP_SECRET and (do_search or do_home):
@@ -303,7 +293,7 @@ if selected:
             )
             quality = st.selectbox("គុណភាពវីដេអូ", [360, 480, 540, 720, 1080], index=4)
             codec = st.selectbox("ទម្រង់វីដេអូ", ["h264", "hevc"], index=0)
-            if st.button("▶ ចាក់វីដេអូ / បង្ហាញតំណ", disabled=not selected_labels):
+            if st.button("▶ ចាក់វីដេអូ", disabled=not selected_labels):
                 if len(selected_labels) > 5:
                     st.warning("សូមជ្រើសរើសមិនលើស 5 ភាគក្នុងមួយលើក។")
                 else:
@@ -325,7 +315,7 @@ if selected:
                             continue
                         st.markdown(f"### ភាគ {ep_num}")
                         st.video(video_url)
-                        st.link_button("⬇ បើក / ទាញយកវីដេអូ", video_url, use_container_width=True)
+                        st.link_button("⬇ ទាញយកវីដេអូ", video_url, use_container_width=True)
                         if playback.get("source") == "stream" and playback.get("ready") is False:
                             st.caption("វីដេអូកំពុងរៀបចំនៅម៉ាស៊ីនមេ។ សូមរង់ចាំ រួចចុចតំណម្ដងទៀត។")
                         elif playback.get("source") == "origin":
@@ -334,13 +324,5 @@ if selected:
         st.error("មានបញ្ហា៖ " + str(exc))
 
 st.divider()
-st.markdown("""
-<div class="bottom-nav">
- <div><span>⌂</span>ទំព័រដើម</div>
- <div><span>⌕</span>ស្វែងរក</div>
- <div class="download"><span>⬇</span>ទាញយក</div>
- <div><span>▤</span>បណ្ណាល័យ</div>
- <div><span>♙</span>គណនី</div>
-</div>
-""", unsafe_allow_html=True)
+
 st.caption("កម្មវិធីមើល និងទាញយករឿងភាគចិន")
