@@ -128,21 +128,58 @@ def clear_cached_lists():
 st.markdown("""
 <style>
     .stApp { background: #f7f8fc; }
-    .block-container { max-width: 1180px; padding-top: 1.3rem; padding-bottom: 3rem; }
+    .block-container { max-width: 1180px; padding: .65rem 1rem 1.5rem; }
     [data-testid="stHeader"] { background: transparent; }
     .hero {
-        padding: 1.35rem 1.5rem; border-radius: 20px; margin-bottom: 1.2rem;
+        padding: 1rem 1.2rem; border-radius: 18px; margin-bottom: .8rem;
         background: linear-gradient(120deg, #251b4b 0%, #5140a0 55%, #8065cf 100%);
         color: white; box-shadow: 0 8px 24px rgba(47,35,94,.16);
     }
-    .hero h1 { color: white; margin: 0 0 .35rem 0; font-size: 2rem; }
-    .hero p { color: #eee9ff; margin: 0; font-size: 1rem; }
-    [data-testid="stImage"] img { border-radius: 13px; object-fit: cover; }
+    .hero h1 { color: white; margin: 0 0 .25rem 0; font-size: 1.65rem; }
+    .hero p { color: #eee9ff; margin: 0; font-size: .9rem; line-height: 1.5; }
+    [data-testid="stImage"] img {
+        width: 100%; height: 175px; border-radius: 10px; object-fit: cover;
+    }
+    /* Compact drama gallery: 4 cards on desktop, 2 cards on phones. */
+    div[data-testid="stHorizontalBlock"] {
+        gap: .65rem; align-items: flex-start;
+    }
+    div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
+        min-width: 0 !important;
+    }
+    div[data-testid="stButton"] > button {
+        padding: .35rem .55rem; min-height: 2.25rem; font-size: .9rem;
+    }
+    h2, h3 { margin-top: .65rem !important; margin-bottom: .45rem !important; }
     div.stButton > button, div.stFormSubmitButton > button, .stLinkButton a {
         border-radius: 11px; min-height: 2.7rem; font-weight: 600;
     }
     div[data-testid="stAlert"] { border-radius: 13px; }
     footer { visibility: hidden; }
+    @media (max-width: 700px) {
+        .block-container { padding: .45rem .55rem 1rem; }
+        .hero { padding: .75rem .9rem; border-radius: 14px; margin-bottom: .6rem; }
+        .hero h1 { font-size: 1.35rem; }
+        .hero p { font-size: .78rem; }
+        div[data-testid="stHorizontalBlock"] {
+            display: flex !important; flex-wrap: wrap !important;
+            gap: .55rem !important;
+        }
+        div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
+            flex: 0 0 calc(50% - .3rem) !important;
+            width: calc(50% - .3rem) !important;
+            min-width: calc(50% - .3rem) !important;
+        }
+        [data-testid="stImage"] img { height: 125px; border-radius: 8px; }
+        div[data-testid="stMarkdownContainer"] p {
+            font-size: .84rem; line-height: 1.35;
+        }
+        div[data-testid="stButton"] > button {
+            min-height: 2rem; font-size: .82rem; padding: .25rem .35rem;
+        }
+        h2 { font-size: 1.25rem !important; }
+        h3 { font-size: 1.05rem !important; }
+    }
 </style>
 <div class="hero">
   <h1>🍎 Hongguo Drama</h1>
