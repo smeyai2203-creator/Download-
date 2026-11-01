@@ -9,7 +9,7 @@ import requests
 import streamlit as st
 
 st.set_page_config(
-    page_title="រឿងភាគចិន",
+    page_title="Hongguo Drama Downloader",
     page_icon="🍎",
     layout="wide",
 )
@@ -127,79 +127,65 @@ def clear_cached_lists():
 
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Battambang:wght@400;500;600;700&display=swap');
-.stApp { background:#0b0b0b; color:#fff; }
-[data-testid="stHeader"] { background:#0b0b0b; }
-.block-container { max-width:1500px; padding:.45rem .65rem 2rem; }
-.hero {
-  padding:1rem; margin:.3rem 0 .8rem; border-radius:12px;
-  background:linear-gradient(100deg,#171717,#3a1717);
-  border:1px solid #563030;
-}
-.hero h1 { color:#fff; font-size:1.5rem; font-weight:700; margin:0 0 .3rem; }
-.hero p { color:#fff; font-size:1rem; line-height:1.6; margin:0; }
-.hero .hero-tag { display:inline-block; background:#d71920; color:#fff;
-  padding:.25rem .6rem; border-radius:6px; font-weight:700; margin-bottom:.35rem; }
-html, body, [class*="css"], button, input, textarea, select {
-  font-family:'Battambang',sans-serif !important;
-}
-h1,h2,h3,p,label,
-[data-testid="stMarkdownContainer"],
-[data-testid="stCaptionContainer"] { color:#fff !important; }
-h2 { font-size:1.25rem !important; line-height:1.6 !important; }
-h3 { font-size:1.1rem !important; line-height:1.6 !important; }
-.poster-title {
-  color:#fff; font-size:1rem; font-weight:700;
-  line-height:1.6; min-height:3.2em; margin:.35rem 0;
-  overflow-wrap:anywhere;
-}
+.stApp { background:#101111; color:#f4f4f4; }
+[data-testid="stHeader"] { background:#101111; }
+.block-container { max-width:1500px; padding:.45rem .8rem 1.1rem; }
+.hero { padding:.5rem .8rem; border-radius:5px; margin-bottom:.45rem;
+        background:#171818; border-bottom:1px solid #292929; }
+.hero h1 { color:#fff; margin:0 0 .08rem; font-size:1.25rem; }
+.hero p { color:#c9c9c9; margin:0; font-size:.78rem; }
+h1,h2,h3,p,label,[data-testid="stMarkdownContainer"] { color:#f0f0f0; }
+h2,h3 { margin:.48rem 0 .28rem !important; }
+[data-testid="stImage"] { width:100%; }
 [data-testid="stImage"] img {
-  width:100%; aspect-ratio:2/3; height:auto; object-fit:cover;
-  border-radius:8px; border:1px solid #444;
+ width:100% !important; height:auto !important; aspect-ratio:2/3;
+ object-fit:cover; border-radius:5px;
 }
-[data-testid="stTextInput"] input,
-[data-testid="stMultiSelect"] input,
-[data-testid="stSelectbox"] input {
-  background:#202020 !important; color:#fff !important;
-  border:1px solid #777 !important; min-height:2.7rem;
+div[data-testid="stHorizontalBlock"] {
+ display:flex !important; flex-wrap:nowrap !important;
+ gap:8px !important; align-items:flex-start;
 }
-[data-testid="stTextInput"] label,
-[data-testid="stMultiSelect"] label,
-[data-testid="stSelectbox"] label {
-  color:#fff !important; font-size:1rem !important; font-weight:700 !important;
+div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
+ flex:1 1 0 !important; width:0 !important; min-width:0 !important;
 }
-[data-testid="stButton"] > button,
-[data-testid="stFormSubmitButton"] > button,
+div[data-testid="stTextInput"] input {
+ background:#202222; color:#fff; border:1px solid #444;
+}
+div[data-testid="stButton"] > button,
+div[data-testid="stFormSubmitButton"] > button,
 .stLinkButton a {
-  background:#d71920 !important; color:#fff !important;
-  border:1px solid #ff7378 !important; border-radius:8px;
-  min-height:2.6rem; padding:.35rem .55rem;
-  font-size:.95rem !important; font-weight:700 !important;
-  line-height:1.5; white-space:normal;
+ background:#292929; color:#fff; border:1px solid #555;
+ border-radius:5px; min-height:1.8rem; padding:.18rem .3rem;
+ font-size:.75rem; white-space:normal;
 }
-[data-testid="stButton"] > button:hover,
-[data-testid="stFormSubmitButton"] > button:hover,
-.stLinkButton a:hover { background:#a90f16 !important; color:#fff !important; }
-[data-testid="stCaptionContainer"] { color:#e6e6e6 !important; font-size:.9rem !important; }
-[data-testid="stAlert"] { border-radius:8px; }
+div[data-testid="stButton"] > button:hover {
+ border-color:#e5a12b; color:#ffd27a;
+}
+[data-testid="stAlert"] { border-radius:7px; }
 footer { visibility:hidden; }
 @media(max-width:700px) {
-  .block-container { padding:.3rem .4rem 1.5rem; }
-  .hero { padding:.75rem; }
-  .hero h1 { font-size:1.2rem; }
-  .hero p { font-size:.9rem; }
-  h2 { font-size:1.1rem !important; }
-  .poster-title { font-size:.88rem; line-height:1.55; min-height:3.1em; }
-  [data-testid="stCaptionContainer"] { font-size:.8rem !important; }
-  [data-testid="stButton"] > button,
-  [data-testid="stFormSubmitButton"] > button,
-  .stLinkButton a { font-size:.82rem !important; min-height:2.35rem; }
+ .block-container { padding:.25rem .35rem .8rem; }
+ .hero { padding:.4rem .55rem; margin-bottom:.35rem; }
+ .hero h1 { font-size:1rem; } .hero p { font-size:.68rem; }
+ div[data-testid="stHorizontalBlock"] { gap:5px !important; }
+ div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
+  flex:1 1 0 !important; width:0 !important; min-width:0 !important;
+ }
+ [data-testid="stImage"] img { aspect-ratio:2/3; height:auto !important; }
+ h2 { font-size:1.02rem !important; }
+ h3 { font-size:.92rem !important; }
+ div[data-testid="stMarkdownContainer"] p {
+  font-size:.68rem; line-height:1.2; overflow-wrap:anywhere;
+ }
+ div[data-testid="stButton"] > button,
+ div[data-testid="stFormSubmitButton"] > button {
+  font-size:.65rem; min-height:1.65rem; padding:.12rem .18rem;
+ }
 }
 </style>
 <div class="hero">
-  <div class="hero-tag">HD • រឿងភាគចិន</div>
-  <h1>រឿងភាគចិនថ្មីៗ និងពេញនិយម</h1>
-  <p>ស្វែងរករឿងដែលអ្នកចូលចិត្ត • មើលភាគ • ទាញយកវីដេអូ</p>
+  <h1>🍎 Hongguo Drama</h1>
+  <p>រឿងភាគចិន • ស្វែងរករឿង • មើលភាគ និងទាញយកវីដេអូ</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -211,7 +197,7 @@ if not APP_ID or not APP_SECRET:
     st.info("កុំដាក់ APPSECRET ក្នុងកូដ ឬ GitHub។ ដាក់តែក្នុង Streamlit Secrets ប៉ុណ្ណោះ។")
 
 with st.form("search_form"):
-    query = st.text_input("🔎 ស្វែងរករឿង", placeholder="បញ្ចូលចំណងជើងរឿង...")
+    query = st.text_input("ស្វែងរករឿង", placeholder="វាយឈ្មោះរឿងនៅទីនេះ...")
     c1, c2 = st.columns(2)
     do_search = c1.form_submit_button("🔎 ស្វែងរក", use_container_width=True)
     do_home = c2.form_submit_button("🏠 រឿងកំពុងពេញនិយម", use_container_width=True)
@@ -227,13 +213,13 @@ if do_search and query.strip():
             st.session_state["drama_items"] = search_dramas(query.strip())
             st.session_state["selected_drama"] = None
     except Exception as exc:
-        st.error("មានបញ្ហា៖ " + str(exc))
+        st.error(str(exc))
 elif do_home or (not st.session_state["drama_items"] and APP_ID and APP_SECRET):
     try:
         with st.spinner("កំពុងទាញយករឿងកំពុងពេញនិយម..."):
             st.session_state["drama_items"] = get_rankings()
     except Exception as exc:
-        st.error("មានបញ្ហា៖ " + str(exc))
+        st.error(str(exc))
 
 items = [
     normalize_drama(row)
@@ -241,38 +227,27 @@ items = [
     if isinstance(row, dict) and row.get("series_id")
 ]
 
-if items:
-    st.subheader(f"🔥 រឿងពេញនិយម / លទ្ធផលស្វែងរក ({len(items)})")
-    # Three readable posters per row on a phone; desktop can show more space per card.
-    for row_start in range(0, len(items), 3):
-        row_items = items[row_start:row_start + 3]
-        columns = st.columns(3, gap="small")
-        for col, item in zip(columns, row_items):
-            with col:
-                if item["cover"]:
-                    st.image(item["cover"], use_container_width=True)
-                st.markdown("<div class=\"poster-title\">" + item["title"] + "</div>", unsafe_allow_html=True)
-                if item["episodes"]:
-                    st.caption(f"ចំនួន {item['episodes']} ភាគ")
-                if st.button("មើលរឿង", key=f"drama_{item['id']}", use_container_width=True):
-                    st.session_state["selected_drama"] = item
-                    st.rerun()
-elif APP_ID and APP_SECRET and (do_search or do_home):
-    st.info("រកមិនឃើញរឿងទេ។ សូមសាកល្បងឈ្មោះរឿងផ្សេង។")
-
 selected = st.session_state.get("selected_drama")
+
+# When a drama is selected, show its own detail/player screen only.
+# This keeps the user from having to scroll past the poster catalogue.
 if selected:
-    st.divider()
-    st.subheader("📺 ចំណងជើងរឿង៖ " + selected["title"])
-    if st.button("← ត្រឡប់ទៅបញ្ជីរឿង"):
+    if st.button("← ត្រឡប់ទៅបញ្ជីរឿង", key="back_to_catalog", use_container_width=True):
         st.session_state["selected_drama"] = None
         st.rerun()
+
+    st.title("📺 " + selected["title"])
+    if selected.get("cover"):
+        st.image(selected["cover"], use_container_width=True)
 
     try:
         with st.spinner("កំពុងទាញយកព័ត៌មានភាគ..."):
             detail = get_details(selected["id"])
 
-        st.write(detail.get("intro") or selected.get("desc") or "")
+        description = detail.get("intro") or selected.get("desc") or ""
+        if description:
+            st.write(description)
+
         episode_rows = detail.get("episodes") or []
         playable_rows = [
             ep for ep in episode_rows
@@ -280,49 +255,70 @@ if selected:
         ]
 
         if not playable_rows:
-            st.warning("រឿងនេះមិនទាន់មានភាគសម្រាប់មើល ឬទាញយកទេ។")
+            st.warning("រឿងនេះមិនទាន់មានភាគដែលអាចចាក់បានទេ។")
         else:
             labels = {
                 f"ភាគ {int(ep.get('ep', i + 1))}": int(ep.get("ep", i + 1))
                 for i, ep in enumerate(playable_rows)
             }
-            selected_labels = st.multiselect(
-                "ជ្រើសរើសភាគ (អតិបរមា 5 ភាគ)",
-                list(labels.keys()),
-                default=[list(labels.keys())[0]],
-            )
-            quality = st.selectbox("គុណភាពវីដេអូ", [360, 480, 540, 720, 1080], index=4)
-            codec = st.selectbox("ទម្រង់វីដេអូ", ["h264", "hevc"], index=0)
-            if st.button("▶ ចាក់វីដេអូ", disabled=not selected_labels):
-                if len(selected_labels) > 5:
-                    st.warning("សូមជ្រើសរើសមិនលើស 5 ភាគក្នុងមួយលើក។")
+            chosen_label = st.selectbox("ជ្រើសរើសភាគ", list(labels.keys()), key=f"episode_{selected['id']}")
+            quality = st.selectbox("គុណភាពវីដេអូ", [360, 480, 540, 720, 1080], index=4, key=f"quality_{selected['id']}")
+            codec = st.selectbox("ទម្រង់វីដេអូ", ["h264", "hevc"], index=0, key=f"codec_{selected['id']}")
+
+            if st.button("▶ មើលភាគនេះ", key=f"play_{selected['id']}", use_container_width=True):
+                ep_num = labels[chosen_label]
+                with st.spinner(f"កំពុងរៀបចំភាគ {ep_num}..."):
+                    playback = xiaoying_get(
+                        "play",
+                        {
+                            "series_id": selected["id"],
+                            "ep": ep_num,
+                            "q": quality,
+                            "codec": codec,
+                        },
+                    )
+                video_url = playback.get("url")
+                if video_url:
+                    st.session_state[f"playback_{selected['id']}_{ep_num}"] = {
+                        "url": video_url,
+                        "source": playback.get("source"),
+                        "ready": playback.get("ready"),
+                    }
                 else:
-                    for label in selected_labels:
-                        ep_num = labels[label]
-                        with st.spinner(f"កំពុងរៀបចំភាគ {ep_num}..."):
-                            playback = xiaoying_get(
-                                "play",
-                                {
-                                    "series_id": selected["id"],
-                                    "ep": ep_num,
-                                    "q": quality,
-                                    "codec": codec,
-                                },
-                            )
-                        video_url = playback.get("url")
-                        if not video_url:
-                            st.warning(f"ភាគ {ep_num}: API មិនបានផ្ដល់តំណវីដេអូទេ។")
-                            continue
-                        st.markdown(f"### ភាគ {ep_num}")
-                        st.video(video_url)
-                        st.link_button("⬇ ទាញយកវីដេអូ", video_url, use_container_width=True)
-                        if playback.get("source") == "stream" and playback.get("ready") is False:
-                            st.caption("វីដេអូកំពុងរៀបចំនៅម៉ាស៊ីនមេ។ សូមរង់ចាំ រួចចុចតំណម្ដងទៀត។")
-                        elif playback.get("source") == "origin":
-                            st.caption("តំណនេះជាតំណប្រភពដើម និងមានពេលផុតកំណត់។")
+                    st.warning("API មិនបានផ្ដល់តំណវីដេអូទេ។")
+
+            ep_num = labels[chosen_label]
+            saved_playback = st.session_state.get(f"playback_{selected['id']}_{ep_num}")
+            if saved_playback:
+                video_url = saved_playback["url"]
+                st.subheader(f"🎬 {chosen_label}")
+                st.video(video_url)
+                st.link_button("⬇ ទាញយក / បើកវីដេអូ", video_url, use_container_width=True)
+                if saved_playback.get("source") == "stream" and saved_playback.get("ready") is False:
+                    st.info("វីដេអូកំពុងរៀបចំនៅម៉ាស៊ីនមេ។ សូមរង់ចាំ រួចចុចមើលម្ដងទៀត។")
+                elif saved_playback.get("source") == "origin":
+                    st.caption("តំណវីដេអូប្រភពដើមអាចមានពេលផុតកំណត់។")
     except Exception as exc:
-        st.error("មានបញ្ហា៖ " + str(exc))
+        st.error(str(exc))
+
+else:
+    if items:
+        st.subheader(f"🎬 រឿងកំពុងពេញនិយម / លទ្ធផលស្វែងរក ({len(items)})")
+        for row_start in range(0, len(items), 6):
+            row_items = items[row_start:row_start + 6]
+            columns = st.columns(6, gap="small")
+            for col, item in zip(columns, row_items):
+                with col:
+                    if item["cover"]:
+                        st.image(item["cover"], use_container_width=True)
+                    st.markdown("**" + item["title"] + "**")
+                    if item["tags"]:
+                        st.caption(" · ".join(str(tag) for tag in item["tags"][:2]))
+                    if st.button("មើលរឿង", key=f"drama_{item['id']}", use_container_width=True):
+                        st.session_state["selected_drama"] = item
+                        st.rerun()
+    elif APP_ID and APP_SECRET and (do_search or do_home):
+        st.info("រកមិនឃើញរឿងទេ។ សូមសាកល្បងឈ្មោះរឿងផ្សេង។")
 
 st.divider()
-
-st.caption("កម្មវិធីមើល និងទាញយករឿងភាគចិន")
+st.caption("Hongguo Drama Downloader · Powered by XiaoYingAPI")
