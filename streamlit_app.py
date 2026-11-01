@@ -127,65 +127,41 @@ def clear_cached_lists():
 
 st.markdown("""
 <style>
-.stApp { background:#101111; color:#f4f4f4; }
-[data-testid="stHeader"] { background:#101111; }
-.block-container { max-width:1500px; padding:.45rem .8rem 1.1rem; }
-.hero { padding:.5rem .8rem; border-radius:5px; margin-bottom:.45rem;
-        background:#171818; border-bottom:1px solid #292929; }
-.hero h1 { color:#fff; margin:0 0 .08rem; font-size:1.25rem; }
-.hero p { color:#c9c9c9; margin:0; font-size:.78rem; }
-h1,h2,h3,p,label,[data-testid="stMarkdownContainer"] { color:#f0f0f0; }
-h2,h3 { margin:.48rem 0 .28rem !important; }
-[data-testid="stImage"] { width:100%; }
-[data-testid="stImage"] img {
- width:100% !important; height:auto !important; aspect-ratio:2/3;
- object-fit:cover; border-radius:5px;
-}
-div[data-testid="stHorizontalBlock"] {
- display:flex !important; flex-wrap:nowrap !important;
- gap:8px !important; align-items:flex-start;
-}
-div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
- flex:1 1 0 !important; width:0 !important; min-width:0 !important;
-}
-div[data-testid="stTextInput"] input {
- background:#202222; color:#fff; border:1px solid #444;
-}
-div[data-testid="stButton"] > button,
-div[data-testid="stFormSubmitButton"] > button,
-.stLinkButton a {
- background:#292929; color:#fff; border:1px solid #555;
- border-radius:5px; min-height:1.8rem; padding:.18rem .3rem;
- font-size:.75rem; white-space:normal;
-}
-div[data-testid="stButton"] > button:hover {
- border-color:#e5a12b; color:#ffd27a;
-}
-[data-testid="stAlert"] { border-radius:7px; }
-footer { visibility:hidden; }
+.stApp {background:#080909;color:#f5f5f5;}
+[data-testid="stHeader"] {background:#080909;}
+.block-container {max-width:1500px;padding:.45rem .65rem 1rem;}
+.hero {padding:.65rem .85rem;border-radius:9px;margin:.1rem 0 .65rem;
+ background:linear-gradient(100deg,#171717,#321010);border:1px solid #3c2020;}
+.hero h1 {color:#fff;margin:0;font-size:1.45rem;font-weight:800;}
+.hero p {color:#ddd;margin:.12rem 0 0;font-size:.82rem;}
+h1,h2,h3,p,label,[data-testid="stMarkdownContainer"] {color:#f4f4f4;}
+h2,h3 {margin:.55rem 0 .35rem!important;}
+[data-testid="stImage"] img {width:100%!important;aspect-ratio:2/3;height:auto!important;
+ object-fit:cover;border-radius:7px;border:1px solid #292929;}
+div[data-testid="stHorizontalBlock"] {gap:8px!important;align-items:flex-start;}
+div[data-testid="stTextInput"] input {background:#1b1b1b;color:white;border:1px solid #444;}
+div[data-testid="stButton"]>button,div[data-testid="stFormSubmitButton"]>button,
+.stLinkButton a {background:#e50914;color:#fff;border:0;border-radius:7px;
+ min-height:2rem;padding:.25rem .4rem;font-size:.78rem;font-weight:650;}
+div[data-testid="stButton"]>button:hover,.stLinkButton a:hover {background:#b80710;color:white;}
+[data-testid="stAlert"] {border-radius:8px;}
+[data-testid="stExpander"] {background:#171717;border:1px solid #333;}
+footer {visibility:hidden;}
 @media(max-width:700px) {
- .block-container { padding:.25rem .35rem .8rem; }
- .hero { padding:.4rem .55rem; margin-bottom:.35rem; }
- .hero h1 { font-size:1rem; } .hero p { font-size:.68rem; }
- div[data-testid="stHorizontalBlock"] { gap:5px !important; }
- div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
-  flex:1 1 0 !important; width:0 !important; min-width:0 !important;
- }
- [data-testid="stImage"] img { aspect-ratio:2/3; height:auto !important; }
- h2 { font-size:1.02rem !important; }
- h3 { font-size:.92rem !important; }
- div[data-testid="stMarkdownContainer"] p {
-  font-size:.68rem; line-height:1.2; overflow-wrap:anywhere;
- }
- div[data-testid="stButton"] > button,
- div[data-testid="stFormSubmitButton"] > button {
-  font-size:.65rem; min-height:1.65rem; padding:.12rem .18rem;
- }
+ .block-container {padding:.25rem .35rem .8rem;}
+ .hero {padding:.5rem .65rem;margin-bottom:.45rem;}
+ .hero h1 {font-size:1.12rem;} .hero p {font-size:.7rem;}
+ div[data-testid="stHorizontalBlock"] {gap:5px!important;}
+ [data-testid="stImage"] img {aspect-ratio:2/3;height:auto!important;}
+ h2 {font-size:1.05rem!important;} h3 {font-size:.92rem!important;}
+ div[data-testid="stMarkdownContainer"] p {font-size:.7rem;line-height:1.25;}
+ div[data-testid="stButton"]>button,div[data-testid="stFormSubmitButton"]>button,
+ .stLinkButton a {font-size:.67rem;min-height:1.75rem;padding:.15rem .2rem;}
 }
 </style>
 <div class="hero">
-  <h1>🍎 Hongguo Drama</h1>
-  <p>រឿងភាគចិន • ស្វែងរករឿង • មើលភាគ និងទាញយកវីដេអូ</p>
+  <h1>🍎 រឿងភាគចិន | Hongguo Drama</h1>
+  <p>មើលរឿង • ស្វែងរកចំណងជើង • ជ្រើសរើសភាគ • ទាញយកវីដេអូ</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -197,7 +173,7 @@ if not APP_ID or not APP_SECRET:
     st.info("កុំដាក់ APPSECRET ក្នុងកូដ ឬ GitHub។ ដាក់តែក្នុង Streamlit Secrets ប៉ុណ្ណោះ។")
 
 with st.form("search_form"):
-    query = st.text_input("ស្វែងរករឿង", placeholder="វាយឈ្មោះរឿងនៅទីនេះ...")
+    query = st.text_input("🔎 ស្វែងរករឿង", placeholder="បញ្ចូលឈ្មោះរឿង...")
     c1, c2 = st.columns(2)
     do_search = c1.form_submit_button("🔎 ស្វែងរក", use_container_width=True)
     do_home = c2.form_submit_button("🏠 រឿងកំពុងពេញនិយម", use_container_width=True)
@@ -228,7 +204,7 @@ items = [
 ]
 
 if items:
-    st.subheader(f"🎬 រឿងកំពុងពេញនិយម / លទ្ធផលស្វែងរក ({len(items)})")
+    st.subheader(f"🔥 រឿងពេញនិយម / លទ្ធផលស្វែងរក ({len(items)})")
     for row_start in range(0, len(items), 6):
         row_items = items[row_start:row_start + 6]
         columns = st.columns(6, gap="small")
@@ -239,7 +215,7 @@ if items:
                 st.markdown("**" + item["title"] + "**")
                 if item["tags"]:
                     st.caption(" · ".join(str(tag) for tag in item["tags"][:2]))
-                if st.button("មើលរឿង", key=f"drama_{item['id']}", use_container_width=True):
+                if st.button("មើល / ទាញយក", key=f"drama_{item['id']}", use_container_width=True):
                     st.session_state["selected_drama"] = item
                     st.rerun()
 elif APP_ID and APP_SECRET and (do_search or do_home):
@@ -272,13 +248,14 @@ if selected:
                 for i, ep in enumerate(playable_rows)
             }
             selected_labels = st.multiselect(
-                "ជ្រើសរើសភាគ (អតិបរមា 5 ភាគ)",
+                "📺 ជ្រើសរើសភាគដែលចង់មើល ឬទាញយក (អតិបរមា 5 ភាគ)",
                 list(labels.keys()),
                 default=[list(labels.keys())[0]],
             )
-            quality = st.selectbox("គុណភាពវីដេអូ", [360, 480, 540, 720, 1080], index=4)
-            codec = st.selectbox("ទម្រង់វីដេអូ", ["h264", "hevc"], index=0)
-            if st.button("▶ ចាក់វីដេអូ / បង្ហាញតំណ", disabled=not selected_labels):
+            c_quality, c_codec = st.columns(2)
+            quality = c_quality.selectbox("គុណភាព", [360, 480, 540, 720, 1080], index=4)
+            codec = c_codec.selectbox("ទម្រង់វីដេអូ", ["h264", "hevc"], index=0)
+            if st.button("▶ បង្កើតតំណមើល និងទាញយក", disabled=not selected_labels, use_container_width=True):
                 if len(selected_labels) > 5:
                     st.warning("សូមជ្រើសរើសមិនលើស 5 ភាគក្នុងមួយលើក។")
                 else:
@@ -296,17 +273,17 @@ if selected:
                             )
                         video_url = playback.get("url")
                         if not video_url:
-                            st.warning(f"ភាគ {ep_num}: API មិនបានផ្ដល់តំណវីដេអូទេ។")
+                            st.warning(f"ភាគ {ep_num}: មិនមានតំណវីដេអូទេ។")
                             continue
-                        st.markdown(f"### ភាគ {ep_num}")
+                        st.markdown(f"### 🎞️ ភាគ {ep_num}")
                         st.video(video_url)
-                        st.link_button("⬇ បើក / ទាញយកវីដេអូ", video_url, use_container_width=True)
+                        st.link_button("⬇️ ទាញយកភាគនេះ", video_url, use_container_width=True)
                         if playback.get("source") == "stream" and playback.get("ready") is False:
-                            st.caption("វីដេអូកំពុងរៀបចំនៅម៉ាស៊ីនមេ។ សូមរង់ចាំ រួចចុចតំណម្ដងទៀត។")
+                            st.info("វីដេអូកំពុងរៀបចំ។ សូមរង់ចាំបន្តិច រួចចុច «ទាញយកភាគនេះ» ម្ដងទៀត។")
                         elif playback.get("source") == "origin":
-                            st.caption("តំណនេះជាតំណប្រភពដើម និងមានពេលផុតកំណត់។")
+                            st.caption("តំណវីដេអូប្រភពដើមអាចមានពេលផុតកំណត់។")
     except Exception as exc:
         st.error(str(exc))
 
 st.divider()
-st.caption("Hongguo Drama Downloader · Powered by XiaoYingAPI")
+st.caption("🍎 រឿងភាគចិន • Hongguo Drama • ដំណើរការដោយ XiaoYingAPI")
