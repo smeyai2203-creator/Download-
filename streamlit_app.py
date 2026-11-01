@@ -127,41 +127,56 @@ def clear_cached_lists():
 
 st.markdown("""
 <style>
-.stApp {background:#080909;color:#f5f5f5;}
-[data-testid="stHeader"] {background:#080909;}
-.block-container {max-width:1500px;padding:.45rem .65rem 1rem;}
-.hero {padding:.65rem .85rem;border-radius:9px;margin:.1rem 0 .65rem;
- background:linear-gradient(100deg,#171717,#321010);border:1px solid #3c2020;}
-.hero h1 {color:#fff;margin:0;font-size:1.45rem;font-weight:800;}
-.hero p {color:#ddd;margin:.12rem 0 0;font-size:.82rem;}
+.stApp {background:#070808;color:#f5f5f5;}
+[data-testid="stHeader"] {background:#070808;}
+.block-container {max-width:1600px;padding:.25rem .65rem 5.2rem;}
+.hero {min-height:205px;padding:1rem 1.1rem;margin:.2rem 0 .8rem;border-radius:14px;
+ border:1px solid #422727;
+ background:linear-gradient(90deg,rgba(0,0,0,.96),rgba(0,0,0,.72) 38%,rgba(0,0,0,.08)),
+ linear-gradient(120deg,#361414,#a34a32 58%,#161616);
+ display:flex;flex-direction:column;justify-content:center;}
+.hero h1 {color:#fff;font-size:1.8rem;font-weight:850;margin:0 0 .25rem;}
+.hero p {color:#f0dddd;font-size:.9rem;margin:0 0 .7rem;}
+.hero .hero-tag {display:inline-block;background:#e50914;color:white;padding:.2rem .55rem;
+ border-radius:6px;font-weight:800;font-size:.78rem;width:max-content;}
 h1,h2,h3,p,label,[data-testid="stMarkdownContainer"] {color:#f4f4f4;}
-h2,h3 {margin:.55rem 0 .35rem!important;}
+h2,h3 {margin:.48rem 0 .35rem!important;}
 [data-testid="stImage"] img {width:100%!important;aspect-ratio:2/3;height:auto!important;
- object-fit:cover;border-radius:7px;border:1px solid #292929;}
-div[data-testid="stHorizontalBlock"] {gap:8px!important;align-items:flex-start;}
+ object-fit:cover;border-radius:8px;border:1px solid #292929;}
+div[data-testid="stHorizontalBlock"] {gap:9px!important;align-items:flex-start;}
 div[data-testid="stTextInput"] input {background:#1b1b1b;color:white;border:1px solid #444;}
 div[data-testid="stButton"]>button,div[data-testid="stFormSubmitButton"]>button,
-.stLinkButton a {background:#e50914;color:#fff;border:0;border-radius:7px;
- min-height:2rem;padding:.25rem .4rem;font-size:.78rem;font-weight:650;}
+.stLinkButton a {background:#ed101b;color:#fff;border:0;border-radius:8px;
+ min-height:1.9rem;padding:.22rem .35rem;font-size:.75rem;font-weight:700;}
 div[data-testid="stButton"]>button:hover,.stLinkButton a:hover {background:#b80710;color:white;}
 [data-testid="stAlert"] {border-radius:8px;}
 [data-testid="stExpander"] {background:#171717;border:1px solid #333;}
 footer {visibility:hidden;}
+.bottom-nav {position:fixed;z-index:999;bottom:0;left:0;right:0;background:#080808;
+ border-top:1px solid #333;display:flex;justify-content:space-around;align-items:center;
+ padding:.5rem .2rem .7rem;color:#eee;font-size:.76rem;text-align:center;}
+.bottom-nav span {display:block;font-size:1.25rem;margin-bottom:.12rem;}
+.bottom-nav .download {background:#ed1014;border-radius:50%;padding:.55rem .8rem;
+ transform:translateY(-12px);border:3px solid #333;font-weight:800;}
 @media(max-width:700px) {
- .block-container {padding:.25rem .35rem .8rem;}
- .hero {padding:.5rem .65rem;margin-bottom:.45rem;}
- .hero h1 {font-size:1.12rem;} .hero p {font-size:.7rem;}
- div[data-testid="stHorizontalBlock"] {gap:5px!important;}
+ .block-container {padding:.2rem .3rem 5.4rem;}
+ .hero {min-height:155px;padding:.7rem .75rem;margin-bottom:.5rem;border-radius:10px;}
+ .hero h1 {font-size:1.22rem;} .hero p {font-size:.72rem;margin-bottom:.45rem;}
+ .hero .hero-tag {font-size:.68rem;}
+ div[data-testid="stHorizontalBlock"] {gap:6px!important;}
  [data-testid="stImage"] img {aspect-ratio:2/3;height:auto!important;}
- h2 {font-size:1.05rem!important;} h3 {font-size:.92rem!important;}
- div[data-testid="stMarkdownContainer"] p {font-size:.7rem;line-height:1.25;}
+ h2 {font-size:1.03rem!important;} h3 {font-size:.9rem!important;}
+ div[data-testid="stMarkdownContainer"] p {font-size:.69rem;line-height:1.22;}
  div[data-testid="stButton"]>button,div[data-testid="stFormSubmitButton"]>button,
- .stLinkButton a {font-size:.67rem;min-height:1.75rem;padding:.15rem .2rem;}
+ .stLinkButton a {font-size:.62rem;min-height:1.65rem;padding:.12rem .16rem;}
+ .bottom-nav {font-size:.65rem;padding:.35rem .1rem .55rem;}
+ .bottom-nav span {font-size:1.08rem;}
 }
 </style>
 <div class="hero">
-  <h1>🍎 រឿងភាគចិន | Hongguo Drama</h1>
-  <p>មើលរឿង • ស្វែងរកចំណងជើង • ជ្រើសរើសភាគ • ទាញយកវីដេអូ</p>
+  <div class="hero-tag">HD • រឿងភាគចិន</div>
+  <h1>រឿងភាគចិនថ្មីៗ និងពេញនិយម</h1>
+  <p>ស្វែងរករឿងដែលអ្នកចូលចិត្ត • មើលភាគ • ទាញយកវីដេអូ</p>
 </div>
 """, unsafe_allow_html=True)
 
@@ -173,7 +188,7 @@ if not APP_ID or not APP_SECRET:
     st.info("កុំដាក់ APPSECRET ក្នុងកូដ ឬ GitHub។ ដាក់តែក្នុង Streamlit Secrets ប៉ុណ្ណោះ។")
 
 with st.form("search_form"):
-    query = st.text_input("🔎 ស្វែងរករឿង", placeholder="បញ្ចូលឈ្មោះរឿង...")
+    query = st.text_input("🔎 ស្វែងរករឿង", placeholder="បញ្ចូលចំណងជើងរឿង...")
     c1, c2 = st.columns(2)
     do_search = c1.form_submit_button("🔎 ស្វែងរក", use_container_width=True)
     do_home = c2.form_submit_button("🏠 រឿងកំពុងពេញនិយម", use_container_width=True)
@@ -205,17 +220,18 @@ items = [
 
 if items:
     st.subheader(f"🔥 រឿងពេញនិយម / លទ្ធផលស្វែងរក ({len(items)})")
-    for row_start in range(0, len(items), 6):
-        row_items = items[row_start:row_start + 6]
-        columns = st.columns(6, gap="small")
+    # Three readable posters per row on a phone; desktop can show more space per card.
+    for row_start in range(0, len(items), 3):
+        row_items = items[row_start:row_start + 3]
+        columns = st.columns(3, gap="small")
         for col, item in zip(columns, row_items):
             with col:
                 if item["cover"]:
                     st.image(item["cover"], use_container_width=True)
                 st.markdown("**" + item["title"] + "**")
-                if item["tags"]:
-                    st.caption(" · ".join(str(tag) for tag in item["tags"][:2]))
-                if st.button("មើល / ទាញយក", key=f"drama_{item['id']}", use_container_width=True):
+                if item["episodes"]:
+                    st.caption(f"ចំនួន {item['episodes']} ភាគ")
+                if st.button("⬇ ទាញយក / មើលរឿង", key=f"drama_{item['id']}", use_container_width=True):
                     st.session_state["selected_drama"] = item
                     st.rerun()
 elif APP_ID and APP_SECRET and (do_search or do_home):
@@ -248,14 +264,13 @@ if selected:
                 for i, ep in enumerate(playable_rows)
             }
             selected_labels = st.multiselect(
-                "📺 ជ្រើសរើសភាគដែលចង់មើល ឬទាញយក (អតិបរមា 5 ភាគ)",
+                "ជ្រើសរើសភាគ (អតិបរមា 5 ភាគ)",
                 list(labels.keys()),
                 default=[list(labels.keys())[0]],
             )
-            c_quality, c_codec = st.columns(2)
-            quality = c_quality.selectbox("គុណភាព", [360, 480, 540, 720, 1080], index=4)
-            codec = c_codec.selectbox("ទម្រង់វីដេអូ", ["h264", "hevc"], index=0)
-            if st.button("▶ បង្កើតតំណមើល និងទាញយក", disabled=not selected_labels, use_container_width=True):
+            quality = st.selectbox("គុណភាពវីដេអូ", [360, 480, 540, 720, 1080], index=4)
+            codec = st.selectbox("ទម្រង់វីដេអូ", ["h264", "hevc"], index=0)
+            if st.button("▶ ចាក់វីដេអូ / បង្ហាញតំណ", disabled=not selected_labels):
                 if len(selected_labels) > 5:
                     st.warning("សូមជ្រើសរើសមិនលើស 5 ភាគក្នុងមួយលើក។")
                 else:
@@ -273,17 +288,26 @@ if selected:
                             )
                         video_url = playback.get("url")
                         if not video_url:
-                            st.warning(f"ភាគ {ep_num}: មិនមានតំណវីដេអូទេ។")
+                            st.warning(f"ភាគ {ep_num}: API មិនបានផ្ដល់តំណវីដេអូទេ។")
                             continue
-                        st.markdown(f"### 🎞️ ភាគ {ep_num}")
+                        st.markdown(f"### ភាគ {ep_num}")
                         st.video(video_url)
-                        st.link_button("⬇️ ទាញយកភាគនេះ", video_url, use_container_width=True)
+                        st.link_button("⬇ បើក / ទាញយកវីដេអូ", video_url, use_container_width=True)
                         if playback.get("source") == "stream" and playback.get("ready") is False:
-                            st.info("វីដេអូកំពុងរៀបចំ។ សូមរង់ចាំបន្តិច រួចចុច «ទាញយកភាគនេះ» ម្ដងទៀត។")
+                            st.caption("វីដេអូកំពុងរៀបចំនៅម៉ាស៊ីនមេ។ សូមរង់ចាំ រួចចុចតំណម្ដងទៀត។")
                         elif playback.get("source") == "origin":
-                            st.caption("តំណវីដេអូប្រភពដើមអាចមានពេលផុតកំណត់។")
+                            st.caption("តំណនេះជាតំណប្រភពដើម និងមានពេលផុតកំណត់។")
     except Exception as exc:
         st.error(str(exc))
 
 st.divider()
-st.caption("🍎 រឿងភាគចិន • Hongguo Drama • ដំណើរការដោយ XiaoYingAPI")
+st.markdown("""
+<div class="bottom-nav">
+ <div><span>⌂</span>ទំព័រដើម</div>
+ <div><span>⌕</span>ស្វែងរក</div>
+ <div class="download"><span>⬇</span>ទាញយក</div>
+ <div><span>▤</span>បណ្ណាល័យ</div>
+ <div><span>♙</span>គណនី</div>
+</div>
+""", unsafe_allow_html=True)
+st.caption("Hongguo Drama Downloader · Powered by XiaoYingAPI")
