@@ -9,7 +9,7 @@ import requests
 import streamlit as st
 
 st.set_page_config(
-    page_title="Hongguo Drama Downloader",
+    page_title="រឿងភាគចិន",
     page_icon="🍎",
     layout="wide",
 )
@@ -139,15 +139,46 @@ st.markdown("""
 .hero p {color:#f0dddd;font-size:.9rem;margin:0 0 .7rem;}
 .hero .hero-tag {display:inline-block;background:#e50914;color:white;padding:.2rem .55rem;
  border-radius:6px;font-weight:800;font-size:.78rem;width:max-content;}
-h1,h2,h3,p,label,[data-testid="stMarkdownContainer"] {color:#f4f4f4;}
+h1,h2,h3,p,label,[data-testid="stMarkdownContainer"],
+[data-testid="stCaptionContainer"], [data-testid="stMarkdownContainer"] *,
+.stText, .stCaption, small, span {
+ color:#ffffff !important;
+}
+body, button, input, textarea, select, [data-baseweb] {
+ font-family:"Battambang","Noto Sans Khmer","Khmer OS Siemreap",sans-serif !important;
+}
+[data-testid="stMarkdownContainer"] p,
+[data-testid="stMarkdownContainer"] li,
+[data-testid="stCaptionContainer"] {
+ color:#f5f5f5 !important;
+ font-size: .92rem;
+ line-height:1.55;
+}
 h2,h3 {margin:.48rem 0 .35rem!important;}
+.poster-title {color:#fff;font-size:1rem;font-weight:800;line-height:1.45;
+ min-height:2.8em;margin:.35rem 0 .2rem;text-shadow:0 1px 2px #000;}
 [data-testid="stImage"] img {width:100%!important;aspect-ratio:2/3;height:auto!important;
  object-fit:cover;border-radius:8px;border:1px solid #292929;}
 div[data-testid="stHorizontalBlock"] {gap:9px!important;align-items:flex-start;}
-div[data-testid="stTextInput"] input {background:#1b1b1b;color:white;border:1px solid #444;}
+div[data-testid="stTextInput"] input,
+div[data-testid="stMultiSelect"] input,
+div[data-testid="stSelectbox"] input,
+textarea {
+ background:#202020 !important;color:#ffffff !important;
+ border:1px solid #777 !important;font-size:1rem !important;
+}
+div[data-testid="stTextInput"] label,
+div[data-testid="stMultiSelect"] label,
+div[data-testid="stSelectbox"] label {
+ color:#ffffff !important;font-size:1rem !important;font-weight:700 !important;
+}
+::placeholder {color:#c8c8c8 !important;opacity:1 !important;}
 div[data-testid="stButton"]>button,div[data-testid="stFormSubmitButton"]>button,
-.stLinkButton a {background:#ed101b;color:#fff;border:0;border-radius:8px;
- min-height:1.9rem;padding:.22rem .35rem;font-size:.75rem;font-weight:700;}
+.stLinkButton a {
+ background:#d91520 !important;color:#ffffff !important;border:1px solid #ff646b !important;
+ border-radius:8px;min-height:2.35rem;padding:.35rem .45rem;
+ font-size:.92rem;font-weight:800;white-space:normal;line-height:1.35;
+}
 div[data-testid="stButton"]>button:hover,.stLinkButton a:hover {background:#b80710;color:white;}
 [data-testid="stAlert"] {border-radius:8px;}
 [data-testid="stExpander"] {background:#171717;border:1px solid #333;}
@@ -165,10 +196,12 @@ footer {visibility:hidden;}
  .hero .hero-tag {font-size:.68rem;}
  div[data-testid="stHorizontalBlock"] {gap:6px!important;}
  [data-testid="stImage"] img {aspect-ratio:2/3;height:auto!important;}
- h2 {font-size:1.03rem!important;} h3 {font-size:.9rem!important;}
- div[data-testid="stMarkdownContainer"] p {font-size:.69rem;line-height:1.22;}
+ h2 {font-size:1.12rem!important;} h3 {font-size:1rem!important;}
+ .poster-title {font-size:.9rem;min-height:2.7em;}
+ div[data-testid="stMarkdownContainer"] p {font-size:.88rem;line-height:1.5;}
+ [data-testid="stCaptionContainer"] {font-size:.82rem !important;}
  div[data-testid="stButton"]>button,div[data-testid="stFormSubmitButton"]>button,
- .stLinkButton a {font-size:.62rem;min-height:1.65rem;padding:.12rem .16rem;}
+ .stLinkButton a {font-size:.82rem;min-height:2.15rem;padding:.25rem .3rem;}
  .bottom-nav {font-size:.65rem;padding:.35rem .1rem .55rem;}
  .bottom-nav span {font-size:1.08rem;}
 }
@@ -204,13 +237,13 @@ if do_search and query.strip():
             st.session_state["drama_items"] = search_dramas(query.strip())
             st.session_state["selected_drama"] = None
     except Exception as exc:
-        st.error(str(exc))
+        st.error("មានបញ្ហា៖ " + str(exc))
 elif do_home or (not st.session_state["drama_items"] and APP_ID and APP_SECRET):
     try:
         with st.spinner("កំពុងទាញយករឿងកំពុងពេញនិយម..."):
             st.session_state["drama_items"] = get_rankings()
     except Exception as exc:
-        st.error(str(exc))
+        st.error("មានបញ្ហា៖ " + str(exc))
 
 items = [
     normalize_drama(row)
@@ -228,7 +261,7 @@ if items:
             with col:
                 if item["cover"]:
                     st.image(item["cover"], use_container_width=True)
-                st.markdown("**" + item["title"] + "**")
+                st.markdown("<div class=\"poster-title\">" + item["title"] + "</div>", unsafe_allow_html=True)
                 if item["episodes"]:
                     st.caption(f"ចំនួន {item['episodes']} ភាគ")
                 if st.button("⬇ ទាញយក / មើលរឿង", key=f"drama_{item['id']}", use_container_width=True):
@@ -240,7 +273,7 @@ elif APP_ID and APP_SECRET and (do_search or do_home):
 selected = st.session_state.get("selected_drama")
 if selected:
     st.divider()
-    st.subheader("📺 " + selected["title"])
+    st.subheader("📺 ចំណងជើងរឿង៖ " + selected["title"])
     if st.button("← ត្រឡប់ទៅបញ្ជីរឿង"):
         st.session_state["selected_drama"] = None
         st.rerun()
@@ -257,7 +290,7 @@ if selected:
         ]
 
         if not playable_rows:
-            st.warning("រឿងនេះមិនទាន់មានភាគដែលអាចចាក់បានទេ។")
+            st.warning("រឿងនេះមិនទាន់មានភាគសម្រាប់មើល ឬទាញយកទេ។")
         else:
             labels = {
                 f"ភាគ {int(ep.get('ep', i + 1))}": int(ep.get("ep", i + 1))
@@ -298,7 +331,7 @@ if selected:
                         elif playback.get("source") == "origin":
                             st.caption("តំណនេះជាតំណប្រភពដើម និងមានពេលផុតកំណត់។")
     except Exception as exc:
-        st.error(str(exc))
+        st.error("មានបញ្ហា៖ " + str(exc))
 
 st.divider()
 st.markdown("""
@@ -310,4 +343,4 @@ st.markdown("""
  <div><span>♙</span>គណនី</div>
 </div>
 """, unsafe_allow_html=True)
-st.caption("Hongguo Drama Downloader · Powered by XiaoYingAPI")
+st.caption("កម្មវិធីមើល និងទាញយករឿងភាគចិន")
